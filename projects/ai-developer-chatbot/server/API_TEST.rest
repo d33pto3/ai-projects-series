@@ -1,0 +1,7 @@
+### Test GPT streaming endpoint
+POST http://localhost:5000/api/chat
+Content-Type: application/json
+
+{
+    "messages": "Hello, How is the weather today in Dhaka?"
+}
