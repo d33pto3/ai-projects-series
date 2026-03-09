@@ -1,8 +1,13 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import openai from "../services/openai.js";
+import { generateMockResponse } from "../services/llmMock.js";
+// import openai from "../services/openai.js";
 
 const router = Router();
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 router.post("/", async (req: Request, res: Response) => {
   try {
@@ -11,17 +16,24 @@ router.post("/", async (req: Request, res: Response) => {
     res.setHeader("Content-Type", "text/plain");
     res.setHeader("Transfer-Encoding", "chunked");
 
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages,
-      stream: true,
-    });
+    // const stream = await openai.chat.completions.create({
+    //   model: "gpt-3.5-turbo",
+    //   messages,
+    //   stream: true,
+    // });
 
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content;
-      if (content) {
-        res.write(content);
-      }
+    // for await (const chunk of stream) {
+    //   const content = chunk.choices[0]?.delta?.content;
+    //   if (content) {
+    //     res.write(content);
+    //   }
+    // }
+
+    const chunks = await generateMockResponse(messages);
+
+    for (const chunk of chunks) {
+      res.write(chunk);
+      await sleep(500);
     }
 
     res.end();
